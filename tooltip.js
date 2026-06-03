@@ -479,25 +479,58 @@
         return hasHouseStateVoteDump(district, live);
     };
 
+    const getHousePrimaryBlockCandidates = (block) => {
+        if(!block) return [];
+        if(Array.isArray(block.cands)) return block.cands;
+        if(Array.isArray(block.candidates)) return block.candidates;
+        return [];
+    };
+
+    const hydrateHouseCandidateLiveVotes = (cand, district, live, stateElectData) => {
+        const finalVotes = safeNum(cand && (cand.votes ?? cand.totVotes ?? cand.totalVotes));
+        if(!cand) return { finalVotes: 0, currentVotes: 0 };
+        if(cand.votes === undefined && cand.totVotes !== undefined) cand.votes = cand.totVotes;
+        if(live && hasHouseStateVoteDump(district, live) && stateElectData && cand.updates && cand.updates[stateElectData.indx] !== undefined){
+            cand.currentVotes = Math.round(finalVotes * safeNum(cand.updates[stateElectData.indx], 0));
+        } else if(!live) {
+            cand.currentVotes = finalVotes;
+        } else {
+            cand.currentVotes = 0;
+        }
+        return { finalVotes, currentVotes: safeNum(cand.currentVotes) };
+    };
+
     const hydrateHouseDistrictLiveVotes = (district, live) => {
-        if(!district || !district.cands) return district;
+        if(!district) return district;
         district._betterMapsHouseDistrict = true;
         const stateElectData = getHouseStateElectData(district);
         let totalCurrVotes = 0;
         let totalVotes = 0;
-        district.cands.forEach(cand => {
-            totalVotes += safeNum(cand.votes);
-            if(live && hasHouseStateVoteDump(district, live) && stateElectData && cand.updates && cand.updates[stateElectData.indx] !== undefined){
-                cand.currentVotes = Math.round(safeNum(cand.votes) * safeNum(cand.updates[stateElectData.indx], 0));
-            } else if(!live) {
-                cand.currentVotes = safeNum(cand.votes);
-            } else if(cand.currentVotes === undefined) {
-                cand.currentVotes = 0;
-            } else if(live) {
-                cand.currentVotes = 0;
-            }
-            totalCurrVotes += safeNum(cand.currentVotes);
+
+        const hydrateList = (cands) => {
+            cands.forEach(cand => {
+                const hydrated = hydrateHouseCandidateLiveVotes(cand, district, live, stateElectData);
+                totalVotes += hydrated.finalVotes;
+                totalCurrVotes += hydrated.currentVotes;
+            });
+        };
+
+        if(Array.isArray(district.cands)) hydrateList(district.cands);
+        if(district.dem) hydrateList(getHousePrimaryBlockCandidates(district.dem));
+        if(district.rep) hydrateList(getHousePrimaryBlockCandidates(district.rep));
+        if(district.ind) hydrateList(getHousePrimaryBlockCandidates(district.ind));
+        if(district.nonpartisan) hydrateList(getHousePrimaryBlockCandidates(district.nonpartisan));
+
+        if(Array.isArray(district.candidates) && !Array.isArray(district.cands)){
+            hydrateList(district.candidates);
+        }
+
+        Object.keys(district || {}).forEach(key => {
+            if(["cands", "candidates", "dem", "rep", "ind", "nonpartisan"].indexOf(key) !== -1) return;
+            const value = district[key];
+            if(value && typeof value === "object") hydrateList(getHousePrimaryBlockCandidates(value));
         });
+
         district.totalVotes = safeNum(district.totalVotes, totalVotes);
         district.totalCurrVotes = totalCurrVotes;
         return district;
@@ -718,6 +751,82 @@
         return null;
     };
 
+    const getArchivedPresidentialStateWinnerParty = (stateResult) => {
+        const cands = sortedCandidates(stateResult, false);
+        if(cands.length > 0){
+            const winner = cands.slice().sort((a, b) => {
+                const bEv = safeNum(b.delegates ?? b.electoralVotes ?? b.electVotes ?? b.ev ?? b.evs);
+                const aEv = safeNum(a.delegates ?? a.electoralVotes ?? a.electVotes ?? a.ev ?? a.evs);
+                if(bEv !== aEv) return bEv - aEv;
+                return candidateVotes(b, false) - candidateVotes(a, false);
+            })[0];
+            const party = getFlippedCandidatePartyKey(winner);
+            if(party) return party;
+        }
+        return scanPreviousParty(stateResult, 0, [], true);
+    };
+
+    const getArchivedStateWinnerParty = (stateResult) => {
+        const cands = sortedCandidates(stateResult, false);
+        if(cands.length > 0){
+            const winner = cands.slice().sort((a, b) => candidateVotes(b, false) - candidateVotes(a, false))[0];
+            const party = getFlippedCandidatePartyKey(winner);
+            if(party) return party;
+        }
+        return scanPreviousParty(stateResult, 0, [], true);
+    };
+
+    const getPreviousPresidentialWinnerParty = (districtId) => {
+        const archiveInfo = getArchiveElectionForType("president");
+        if(!archiveInfo) return "";
+        const stateObj = getStateObj(districtId);
+        const states = getArchiveElectionList(archiveInfo);
+        const previousState = states.filter(item => sameDistrictName(item.name, districtId, stateObj)
+            || sameDistrictName(item.state, districtId, stateObj)
+            || sameDistrictName(item.stateName, districtId, stateObj)
+            || sameDistrictName(item.district, districtId, stateObj)
+            || sameDistrictName(item.id, districtId, stateObj)
+            || sameDistrictName(item.stateId, districtId, stateObj))[0];
+        return getArchivedPresidentialStateWinnerParty(previousState);
+    };
+
+    const getPreviousGovernorWinnerParty = (districtId) => {
+        const names = ["allGovArchive", "governorArchive", "govArchive", "governorElectionArchive", "governorElectionHistory", "gubernatorialElectionHistory"];
+        const currentYearValue = getCurrentElectionYear();
+        const stateObj = getStateObj(districtId);
+        const entries = [];
+        for(let i = 0; i < names.length; i++){
+            const value = getGlobalArchiveCandidate(names[i]);
+            const archiveEntries = extractArchiveEntries(value, names[i]).filter(entry => archiveEntryMatchesType(entry, names[i], "governor") && isGeneralArchiveElection(entry));
+            for(let j = 0; j < archiveEntries.length; j++) entries.push(archiveEntries[j]);
+        }
+        const sortedEntries = entries
+            .filter(item => currentYearValue <= 0 || safeNum(item.year, safeNum(item.date)) < currentYearValue)
+            .sort((a, b) => safeNum(b.year, safeNum(b.date)) - safeNum(a.year, safeNum(a.date)));
+        for(let i = 0; i < sortedEntries.length; i++){
+            const directMatch = sameDistrictName(sortedEntries[i].state, districtId, stateObj)
+                || sameDistrictName(sortedEntries[i].stateName, districtId, stateObj)
+                || sameDistrictName(sortedEntries[i].name, districtId, stateObj)
+                || sameDistrictName(sortedEntries[i].district, districtId, stateObj)
+                || sameDistrictName(sortedEntries[i].id, districtId, stateObj)
+                || sameDistrictName(sortedEntries[i].stateId, districtId, stateObj);
+            if(directMatch){
+                const party = getArchivedStateWinnerParty(sortedEntries[i]);
+                if(party) return party;
+            }
+            const races = getArchiveElectionList(sortedEntries[i]);
+            const previousState = races.filter(item => sameDistrictName(item.state, districtId, stateObj)
+                || sameDistrictName(item.stateName, districtId, stateObj)
+                || sameDistrictName(item.name, districtId, stateObj)
+                || sameDistrictName(item.district, districtId, stateObj)
+                || sameDistrictName(item.id, districtId, stateObj)
+                || sameDistrictName(item.stateId, districtId, stateObj))[0];
+            const party = getArchivedStateWinnerParty(previousState);
+            if(party) return party;
+        }
+        return "";
+    };
+
     const isFlippedSeat = (electionType, districtId, district, live, countyView) => {
         const districtCands = sortedCandidates(district, live);
         if(countyView || !district || districtCands.length === 0) return false;
@@ -743,7 +852,10 @@
         if(electionType !== "president"){
             const incumbent = districtCands.filter(cand => cand.incumbent === true)[0];
             previousParty = getFlippedCandidatePartyKey(incumbent);
+        } else {
+            previousParty = getPreviousPresidentialWinnerParty(districtId);
         }
+        if(electionType === "governor") previousParty = getPreviousGovernorWinnerParty(districtId) || previousParty;
 
         const archiveInfo = getArchiveElectionForType(electionType);
         if(!previousParty && archiveInfo){

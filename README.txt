@@ -1,24 +1,51 @@
 PoliticalJunkin's Election Night Overhaul
-Version 1.1
+Version 1.2
 Author: PoliticalJunkin
 
 PoliticalJunkin's Election Night Overhaul is an NW/Executive mod for The Political Process that upgrades election-night map visuals while preserving the game's original county election engine.
 
-Features
-- Election-night map visuals for statewide races.
-- New Hampshire and Massachusetts municipality map layers.
-- Municipality estimates based on local baseline plus live county movement.
-- County internals remain the source of truth.
-- U.S. House state hover tooltip with delegation composition and seat flips.
-- Live vote, lead-change, map-fill, and projection animations.
-- Light and dark election-night themes.
+⭐ Major Features
 
-Municipality Model
-Municipalities are a visual subdivision layer only. They do not replace counties and they do not run a separate election engine.
+⭐ House Hexes Map
+Featuring all 435 Congressional Districts with a full nationwide House overview.
 
-Municipality estimate = municipality baseline + live county movement
+⭐ Presidential Primaries Delegate Count
+Track delegate totals by state throughout the presidential primary season.
 
-This keeps The Political Process stable while allowing Massachusetts and New Hampshire to display town and city level election-night visuals.
+⭐ Primary & General Election Turnout Indicators
+New turnout indicators provide a clearer picture of voter participation across elections.
+
+⭐ New Margin Palette
+A completely updated visual palette for:
+
+Election Margins
+Reported Vote Percentage
+
+Featuring a smoother and more intuitive gradient system.
+
+Fixes & Improvements
+
+Municipal Voting Patterns Fixed
+Municipalities previously reported at identical rates regardless of voting trends. This has been corrected to better reflect accurate voting patterns.
+
+Improved Tooltips
+Added additional details and reorganized information throughout the tooltip system.
+
+Tooltip Formatting Overhaul
+Previously, tooltip sizing and spacing could be inconsistent. Columns and rows have been adjusted to ensure cleaner formatting and proper fit.
+
+Presidential Map Navigation Fix
+Previously, clicking on a Presidential state outside of Election Night mode could cause the map to glitch, forcing users to scroll down to view it. This issue has now been resolved.
+
+Government Composition Map Upgrade
+Government composition pages were still using the original politician overview map. These have now been updated to use the newer, higher-quality map system.
+
+Additional Bug Fixes
+Numerous other bugs and minor issues have been fixed throughout the project, including several smaller fixes not specifically listed here.
+
+Thank you for using Version 1.2!
+
+PoliticalJunkin, Community Content Creator ⭐
 
 Installation
 1. Make sure The Political Process is installed.
@@ -29,9 +56,3 @@ Installation
 
 4. The installed folder should contain manifest.json, main.js, tooltip.js, data, styles, and third-party.
 5. Launch The Political Process and enable/load the mod through the mod loader menu if your setup requires it.
-
-Notes
-- Counties remain the game's internal election source of truth.
-- Massachusetts and New Hampshire municipalities are visual estimates.
-- This mod does not replace the native county reporting system.
-- This mod does not create a separate municipality election framework.

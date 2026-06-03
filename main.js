@@ -797,6 +797,91 @@
             || sameDistrictName(dist.stateId, stateId, stateObj))[0];
     };
 
+    const getArchivedPresidentialStateWinnerParty = (stateResult) => {
+        const cands = getDistrictCandidates(stateResult);
+        if(cands.length > 0){
+            const winner = cands.slice().sort((a, b) => {
+                const bEv = safeNum(b.delegates ?? b.electoralVotes ?? b.electVotes ?? b.ev ?? b.evs);
+                const aEv = safeNum(a.delegates ?? a.electoralVotes ?? a.electVotes ?? a.ev ?? a.evs);
+                if(bEv !== aEv) return bEv - aEv;
+                return getCandidateVotes(b, false) - getCandidateVotes(a, false);
+            })[0];
+            const party = getCandidatePartyKey(winner);
+            if(party) return party;
+        }
+        return scanPreviousParty(stateResult, 0, [], true);
+    };
+
+    const getArchivedStateWinnerParty = (stateResult) => {
+        const cands = getDistrictCandidates(stateResult);
+        if(cands.length > 0){
+            const winner = cands.slice().sort((a, b) => getCandidateVotes(b, false) - getCandidateVotes(a, false))[0];
+            const party = getCandidatePartyKey(winner);
+            if(party) return party;
+        }
+        return scanPreviousParty(stateResult, 0, [], true);
+    };
+
+    const getPreviousPresidentialWinnerParty = (stateId) => {
+        const archiveArray = getArchiveForElectionType("president");
+        if(!archiveArray) return "";
+        const currentYearValue = getCurrentElectionYear();
+        const stateObj = Executive.data.states[String(stateId || "").toLowerCase()] || null;
+        const generals = archiveArray
+            .filter(item => isGeneralArchiveElection(item))
+            .filter(item => currentYearValue <= 0 || safeNum(item.year, safeNum(item.date)) < currentYearValue)
+            .sort((a, b) => safeNum(b.year, safeNum(b.date)) - safeNum(a.year, safeNum(a.date)));
+        for(let i = 0; i < generals.length; i++){
+            const states = getArchiveElectionList(generals[i]);
+            const previousState = states.filter(item => sameDistrictName(item.name, stateId, stateObj)
+                || sameDistrictName(item.state, stateId, stateObj)
+                || sameDistrictName(item.stateName, stateId, stateObj)
+                || sameDistrictName(item.district, stateId, stateObj)
+                || sameDistrictName(item.id, stateId, stateObj)
+                || sameDistrictName(item.stateId, stateId, stateObj))[0];
+            const party = getArchivedPresidentialStateWinnerParty(previousState);
+            if(party) return party;
+        }
+        return "";
+    };
+
+    const getPreviousGovernorWinnerParty = (stateId) => {
+        const names = ["allGovArchive", "governorArchive", "govArchive", "governorElectionArchive", "governorElectionHistory", "gubernatorialElectionHistory"];
+        const currentYearValue = getCurrentElectionYear();
+        const stateObj = Executive.data.states[String(stateId || "").toLowerCase()] || null;
+        const entries = [];
+        for(let i = 0; i < names.length; i++){
+            const value = getGlobalArchiveCandidate(names[i]);
+            const archiveEntries = extractArchiveEntries(value, names[i]).filter(entry => archiveEntryMatchesType(entry, names[i], "governor") && isGeneralArchiveElection(entry));
+            for(let j = 0; j < archiveEntries.length; j++) entries.push(archiveEntries[j]);
+        }
+        const sortedEntries = entries
+            .filter(item => currentYearValue <= 0 || safeNum(item.year, safeNum(item.date)) < currentYearValue)
+            .sort((a, b) => safeNum(b.year, safeNum(b.date)) - safeNum(a.year, safeNum(a.date)));
+        for(let i = 0; i < sortedEntries.length; i++){
+            const directMatch = sameDistrictName(sortedEntries[i].state, stateId, stateObj)
+                || sameDistrictName(sortedEntries[i].stateName, stateId, stateObj)
+                || sameDistrictName(sortedEntries[i].name, stateId, stateObj)
+                || sameDistrictName(sortedEntries[i].district, stateId, stateObj)
+                || sameDistrictName(sortedEntries[i].id, stateId, stateObj)
+                || sameDistrictName(sortedEntries[i].stateId, stateId, stateObj);
+            if(directMatch){
+                const party = getArchivedStateWinnerParty(sortedEntries[i]);
+                if(party) return party;
+            }
+            const races = getArchiveElectionList(sortedEntries[i]);
+            const previousState = races.filter(item => sameDistrictName(item.state, stateId, stateObj)
+                || sameDistrictName(item.stateName, stateId, stateObj)
+                || sameDistrictName(item.name, stateId, stateObj)
+                || sameDistrictName(item.district, stateId, stateObj)
+                || sameDistrictName(item.id, stateId, stateObj)
+                || sameDistrictName(item.stateId, stateId, stateObj))[0];
+            const party = getArchivedStateWinnerParty(previousState);
+            if(party) return party;
+        }
+        return "";
+    };
+
     const scanPreviousParty = (obj, depth = 0, seen = [], allowRaceObject = false) => {
         if(!obj || typeof obj !== "object" || depth > 5 || seen.indexOf(obj) !== -1) return "";
         seen.push(obj);
@@ -849,13 +934,12 @@
 
     const getArchivePreviousWinnerParty = (electionType, stateId) => {
         if(electionType === "president"){
-            const previousState = getPreviousStateElectionDistrict(electionType, stateId);
-            if(previousState){
-                const previousStats = getRaceInfo(previousState, false);
-                const previousWinner = previousStats.finalWinner || previousStats.currentLeader;
-                const previousParty = getCandidatePartyKey(previousWinner) || scanPreviousParty(previousState, 0, [], true);
-                if(previousParty) return previousParty;
-            }
+            const previousParty = getPreviousPresidentialWinnerParty(stateId);
+            if(previousParty) return previousParty;
+        }
+        if(electionType === "governor"){
+            const previousParty = getPreviousGovernorWinnerParty(stateId);
+            if(previousParty) return previousParty;
         }
         const previous = getPreviousStateElectionDistrict(electionType, stateId);
         if(!previous) return "";
@@ -865,6 +949,11 @@
     };
 
     const getPreviousWinnerParty = (electionType, stateId, currentDistrict) => {
+        if(electionType === "governor"){
+            const archiveParty = getArchivePreviousWinnerParty(electionType, stateId);
+            if(archiveParty) return archiveParty;
+        }
+
         if(electionType !== "president" && currentDistrict && Array.isArray(currentDistrict.cands)){
             const incumbent = currentDistrict.cands.filter(cand => cand.incumbent === true)[0];
             const incumbentParty = getCandidatePartyKey(incumbent);
@@ -1173,6 +1262,14 @@
         return getPartyKey(incumbent).charAt(0);
     };
 
+    const getGainPatternId = (party) => {
+        return `gain-${String(party || "I").replace(/[^A-Za-z0-9_-]/g, "") || "I"}`;
+    };
+
+    const getGainPatternFill = (party) => {
+        return `url(#${getGainPatternId(party)})`;
+    };
+
     const isDistrictProjected = (district, live) => {
         if(!district) return false;
         if(!live) return true;
@@ -1212,7 +1309,7 @@
         const flipped = projected && getHouseIncumbentParty(district) && getHouseIncumbentParty(district) !== party;
         if(projectedView){
             if(!projected) return live && totalVotes > 0 ? stringifyColour({ h: 51, s: 20, l: 63 }) : "#697386";
-            if(flipped) return `url(#${party}:gain)`;
+            if(flipped) return getGainPatternFill(party);
             return stringifyColour({ h: baseColour.h, s: Math.max(88, safeNum(baseColour.s, 100)), l: Math.min(36, safeNum(baseColour.l, 36)) });
         }
         return getMarginBucketColour(baseColour, margin);
@@ -1494,8 +1591,7 @@
                     let isGain = isFlippedStateRace(electionType, stateId, currentDistrict, live);
 
                     if (isGain) {
-                        const fillId = getPartyKey(raceInfo.finalWinner || raceInfo.currentLeader) + ":gain";
-                        newColour = `url(#${fillId})`;
+                        newColour = getGainPatternFill(getPartyKey(raceInfo.finalWinner || raceInfo.currentLeader));
                     } else {
                         if (raceProjected) {
                              newColour = stringifyColour(getCandidateColour(raceInfo.finalWinner || raceInfo.currentLeader));
@@ -1516,7 +1612,7 @@
                         newColour = resultColour;
                     } else {
                         if(isFlippedStateRace(electionType, stateId, currentDistrict, live)){
-                            newColour = `url(#${getPartyKey(raceInfo.finalWinner || raceInfo.currentLeader)}:gain)`;
+                            newColour = getGainPatternFill(getPartyKey(raceInfo.finalWinner || raceInfo.currentLeader));
                         } else {
                             const baseColour = getCandidateColour(raceInfo.currentLeader);
                             newColour = getMarginBucketColour(baseColour, raceInfo.currentMargin);
@@ -1664,6 +1760,12 @@
         const partyColDarker = Object.assign({}, partyCol);
         partyColDarker.l = Math.max(partyCol.l - 10, 0);
         const pattern = createHatchPattern(stringifyColour(partyCol), stringifyColour(partyColDarker));
+        pattern.setAttribute("id", getGainPatternId(party));
+        return pattern;
+    };
+
+    const createLegacyGainPattern = (party) => {
+        const pattern = createGainPattern(party);
         pattern.setAttribute("id", party + ":gain");
         return pattern;
     };
@@ -1686,6 +1788,11 @@
         svgElem.appendChild(createGainPattern("I"));
         svgElem.appendChild(createGainPattern("ID"));
         svgElem.appendChild(createGainPattern("IR"));
+        svgElem.appendChild(createLegacyGainPattern("D"));
+        svgElem.appendChild(createLegacyGainPattern("R"));
+        svgElem.appendChild(createLegacyGainPattern("I"));
+        svgElem.appendChild(createLegacyGainPattern("ID"));
+        svgElem.appendChild(createLegacyGainPattern("IR"));
     };
 
     const getCanvasDimension = (canvasElem, attrName, fallback) => {
