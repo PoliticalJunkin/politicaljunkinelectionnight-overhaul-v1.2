@@ -8,7 +8,11 @@
 
     module.exports = {
         getCandidateColour: (cand) => {
-            if(cand.party === "I") return config.partyColours.I.default; return config.partyColours[cand.party] || config.partyColours.I.default;
+            if(cand.party === "I"){
+                const caucusKey = String(cand.caucus || cand.caucusParty || "").charAt(0);
+                return config.partyColours.I[caucusKey] || config.partyColours.I.default;
+            }
+            return config.partyColours[cand.party] || config.partyColours.I.default;
         },
         getPoliticianColour: (pol) => {
             return ((pol.extendedAttribs.party !== "Independent") ? config.partyColours[pol.caucusParty.charAt(0)] :

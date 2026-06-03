@@ -754,6 +754,13 @@ td.winner-i {
 .party-r { background: #dc2626; }
 .party-i { background: #525252; }
 
+.bm-nbc-primary-align-badge {
+  width: auto !important;
+  min-width: 34px !important;
+  padding: 0 6px !important;
+  white-space: nowrap !important;
+}
+
 .bm-nbc-portrait {
     position: relative;
     width: 42px;
@@ -1466,6 +1473,28 @@ td.winner-i {
     padding: 3px 4px !important;
     text-transform: uppercase !important;
     white-space: nowrap !important;
+    animation: bmProjectionStatusIn 520ms cubic-bezier(.16,.84,.24,1) both !important;
+    transform-origin: left center !important;
+}
+
+.bm-nbc-row.is-winner {
+    transition: background-color 520ms ease, box-shadow 520ms ease, transform 520ms cubic-bezier(.16,.84,.24,1) !important;
+}
+
+.bm-nbc-row.is-winner .bm-nbc-check {
+    animation: bmProjectedCheckIn 540ms cubic-bezier(.18,1.35,.32,1) both !important;
+}
+
+@keyframes bmProjectionStatusIn {
+    0% { opacity: 0; transform: translateY(4px) scale(.96); filter: saturate(.8); }
+    55% { opacity: 1; transform: translateY(-1px) scale(1.025); filter: saturate(1.12); }
+    100% { opacity: 1; transform: translateY(0) scale(1); filter: saturate(1); }
+}
+
+@keyframes bmProjectedCheckIn {
+    0% { opacity: 0; transform: scale(.6) rotate(-12deg); }
+    65% { opacity: 1; transform: scale(1.12) rotate(2deg); }
+    100% { opacity: 1; transform: scale(1) rotate(0); }
 }
 
 .bm-nbc-pvi-bottom {
