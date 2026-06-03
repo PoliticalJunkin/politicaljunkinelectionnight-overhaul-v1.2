@@ -1,0 +1,17 @@
+{
+    "id": "politicaljunkins-election-night-overhaul",
+    "name": "PoliticalJunkin's Election Night Overhaul",
+    "description": "Election night visuals, municipality estimates, flips, margins, tooltips, and live map animations.",
+    "author": "PoliticalJunkin",
+    "version": {
+        "major": 1,
+        "minor": 1,
+        "revision": 0,
+        "string": "v1.1"
+    },
+    "required_loader_version": {
+        "major": 0,
+        "minor": 1,
+        "revision": 1
+    }
+}

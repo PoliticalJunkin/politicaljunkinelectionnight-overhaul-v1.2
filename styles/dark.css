@@ -1,0 +1,123 @@
+/* Better Election Maps - dark theme */
+
+.better-maps-container {
+    background: #1b1b1f !important;
+}
+
+#dc-state-path,
+#dc-state-path-live {
+    stroke: #333333;
+    stroke-width: 1px;
+}
+
+.better-maps-state-path:hover {
+    stroke: #ffffff !important;
+    stroke-width: 1px;
+}
+
+#better-maps-tooltip.nbc-tooltip-container,
+#better-maps-tooltip {
+    background: #080d16 !important;
+    color: #f8fafc !important;
+    border: 2px solid #0b1220 !important;
+    box-shadow: 8px 10px 0 rgba(0,0,0,.45), 0 0 22px rgba(0,0,0,.42) !important;
+}
+
+#better-maps-tooltip-network {
+    background: linear-gradient(90deg, #08132e 0%, #123a8f 48%, #8f111b 100%) !important;
+    color: #ffffff !important;
+}
+
+#better-maps-tooltip-header {
+    background: #151c2a !important;
+    border-bottom: 4px solid #030712 !important;
+}
+
+#better-maps-tooltip-title,
+.bm-nbc-votes,
+.bm-nbc-pct,
+.bm-nbc-name {
+    color: #f8fafc !important;
+}
+
+#better-maps-tooltip-reporting {
+    color: #f8fafc !important;
+    background: #263244 !important;
+    border: 1px solid #475569 !important;
+}
+
+#better-maps-tooltip-meta,
+#better-maps-tooltip-entries {
+    background: #0b111d !important;
+}
+
+.bm-nbc-pvi,
+.bm-nbc-margin,
+.bm-nbc-trend,
+.bm-nbc-badge {
+    background: #111827 !important;
+    color: #f8fafc !important;
+    border-color: #475569 !important;
+}
+
+.pvi-d { color: #61a5ff !important; border-color: #1976ff !important; }
+.pvi-r { color: #ff7070 !important; border-color: #ff3030 !important; }
+
+.badge-battleground,
+.badge-projected {
+    background: #ffd400 !important;
+    color: #07101f !important;
+    border-color: #111827 !important;
+}
+
+.badge-key { background: #334155 !important; color: #ffffff !important; }
+.bm-nbc-bottom-indicators .bm-nbc-badge.badge-key {
+    background: repeating-linear-gradient(135deg, #dc2626 0 9px, #ffd400 9px 13px, #dc2626 13px 22px) !important;
+    color: #000000 !important;
+    border-color: #111827 !important;
+}
+.badge-tetc { background: #f97316 !important; color: #ffffff !important; border-color: #ffffff !important; font-weight: 950 !important; }
+.badge-tctc { background: #ffd400 !important; color: #000000 !important; border-color: #111827 !important; font-weight: 950 !important; }
+.badge-watch { background: #c9c08a !important; color: #111827 !important; border-color: #f4df72 !important; font-weight: 950 !important; }
+.badge-house-flip-d { background: #0078ff !important; color: #ffffff !important; border-color: #ffffff !important; }
+.badge-house-flip-r { background: #ff1010 !important; color: #ffffff !important; border-color: #ffffff !important; }
+.badge-house-flip-i { background: #8a2cff !important; color: #ffffff !important; border-color: #ffffff !important; }
+.badge-election-rule { background: #172554 !important; color: #bfdbfe !important; border-color: #60a5fa !important; }
+.badge-rcv-used { background: #4c1d95 !important; color: #ddd6fe !important; border-color: #a78bfa !important; }
+.badge-runoff-rule { background: #7c2d12 !important; color: #fed7aa !important; border-color: #fb923c !important; }
+.badge-runoff { background: #b91c1c !important; color: #ffffff !important; border-color: #ffffff !important; }
+.badge-flipped {
+    background: #ffd400 !important;
+    color: #07101f !important;
+    border-color: #ffffff !important;
+}
+
+.bm-nbc-row {
+    background: #101827 !important;
+    border-bottom: 1px solid #2b3548 !important;
+    color: #f8fafc !important;
+}
+
+.bm-nbc-row:nth-child(even) {
+    background: #0c1422 !important;
+}
+
+.bm-nbc-row.is-winner {
+    background: #172238 !important;
+    box-shadow: inset 4px 0 0 #ffd400 !important;
+}
+
+.bm-nbc-bar-track {
+    background: #2b3446 !important;
+}
+
+#better-maps-tooltip-no-election,
+#better-maps-tooltip-not-counted,
+#better-maps-tooltip-electors {
+    background: #151c2a !important;
+    color: #f8fafc !important;
+}
+
+.bm-nbc-trend {
+    display: none !important;
+}

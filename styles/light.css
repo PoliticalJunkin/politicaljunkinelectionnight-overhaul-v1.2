@@ -1,0 +1,129 @@
+/* Better Election Maps - light theme */
+
+.better-maps-container {
+    background: #f8fafc !important;
+}
+
+#dc-state-path,
+#dc-state-path-live {
+    stroke: #f8fafc;
+    stroke-width: 1px;
+}
+
+.better-maps-state-path {
+    stroke: #ffffff !important;
+    stroke-width: 1px;
+}
+
+.better-maps-state-path:hover {
+    stroke: #111827 !important;
+    stroke-width: 2px;
+}
+
+#better-maps-tooltip.nbc-tooltip-container,
+#better-maps-tooltip {
+    background: #f8fafc !important;
+    color: #111827 !important;
+    border: 2px solid #cbd5e1 !important;
+    box-shadow: 8px 10px 0 rgba(15,23,42,.18), 0 0 18px rgba(15,23,42,.16) !important;
+}
+
+#better-maps-tooltip-network {
+    background: linear-gradient(90deg, #0b5fbd 0%, #ffffff 50%, #c9182b 100%) !important;
+    color: #111827 !important;
+    border-bottom: 1px solid #cbd5e1 !important;
+}
+
+#better-maps-tooltip-header {
+    background: #e2e8f0 !important;
+    border-bottom: 4px solid #cbd5e1 !important;
+}
+
+#better-maps-tooltip-title,
+.bm-nbc-votes,
+.bm-nbc-pct,
+.bm-nbc-name {
+    color: #111827 !important;
+}
+
+#better-maps-tooltip-reporting {
+    color: #0f172a !important;
+    background: #ffffff !important;
+    border: 1px solid #94a3b8 !important;
+}
+
+#better-maps-tooltip-meta,
+#better-maps-tooltip-entries {
+    background: #f1f5f9 !important;
+}
+
+.bm-nbc-pvi,
+.bm-nbc-margin,
+.bm-nbc-trend,
+.bm-nbc-badge {
+    background: #ffffff !important;
+    color: #111827 !important;
+    border-color: #94a3b8 !important;
+}
+
+.pvi-d { color: #0b5fbd !important; border-color: #0b5fbd !important; }
+.pvi-r { color: #c9182b !important; border-color: #c9182b !important; }
+
+.badge-battleground,
+.badge-projected {
+    background: #ffd400 !important;
+    color: #111827 !important;
+    border-color: #111827 !important;
+}
+
+.badge-key { background: #e2e8f0 !important; color: #111827 !important; }
+.bm-nbc-bottom-indicators .bm-nbc-badge.badge-key {
+    background: repeating-linear-gradient(135deg, #dc2626 0 9px, #ffd400 9px 13px, #dc2626 13px 22px) !important;
+    color: #000000 !important;
+    border-color: #111827 !important;
+}
+.badge-tetc { background: #f97316 !important; color: #ffffff !important; border-color: #ffffff !important; font-weight: 950 !important; }
+.badge-tctc { background: #ffd400 !important; color: #000000 !important; border-color: #111827 !important; font-weight: 950 !important; }
+.badge-watch { background: #c9c08a !important; color: #111827 !important; border-color: #f4df72 !important; font-weight: 950 !important; }
+.badge-house-flip-d { background: #0078ff !important; color: #ffffff !important; border-color: #111827 !important; }
+.badge-house-flip-r { background: #ff1010 !important; color: #ffffff !important; border-color: #111827 !important; }
+.badge-house-flip-i { background: #8a2cff !important; color: #ffffff !important; border-color: #111827 !important; }
+.badge-election-rule { background: #dbeafe !important; color: #1e3a8a !important; border-color: #2563eb !important; }
+.badge-rcv-used { background: #ede9fe !important; color: #5b21b6 !important; border-color: #7c3aed !important; }
+.badge-runoff-rule { background: #ffedd5 !important; color: #9a3412 !important; border-color: #ea580c !important; }
+.badge-runoff { background: #dc2626 !important; color: #ffffff !important; border-color: #111827 !important; }
+.badge-flipped {
+    background: #ffd400 !important;
+    color: #111827 !important;
+    border-color: #111827 !important;
+}
+
+.bm-nbc-row {
+    background: #ffffff !important;
+    border-bottom: 1px solid #cbd5e1 !important;
+    color: #111827 !important;
+}
+
+.bm-nbc-row:nth-child(even) {
+    background: #f8fafc !important;
+}
+
+.bm-nbc-row.is-winner {
+    background: #fff7cc !important;
+    box-shadow: inset 4px 0 0 #ffd400 !important;
+}
+
+.bm-nbc-bar-track {
+    background: #cbd5e1 !important;
+}
+
+#better-maps-tooltip-no-election,
+#better-maps-tooltip-not-counted,
+#better-maps-tooltip-electors {
+    background: #ffffff !important;
+    color: #111827 !important;
+}
+
+.bm-nbc-trend {
+    display: none !important;
+}
